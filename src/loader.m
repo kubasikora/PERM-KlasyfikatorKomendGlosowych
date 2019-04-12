@@ -1,3 +1,4 @@
+clear all
 [command1, Fs1] = obcinator('../Przerobione/01-Kamil1.wav');
 [command2, Fs2] = obcinator('../Przerobione/01-Kamil2.wav');
 [command3, Fs3] = obcinator('../Przerobione/01-Kuba1.wav');
@@ -5,22 +6,38 @@
 
 WINDOW_NUM = 32;
 
-[S, F, T, P, Fc, Tc] = spectrogram(command1, round(length(command1)/WINDOW_NUM), 0, [], Fs1, 'yaxis');
-[S, F, T, P, Fc, Tc] = spectrogram(command2, round(length(command2)/WINDOW_NUM), 0, [], Fs2, 'yaxis');
-[S, F, T, P, Fc, Tc] = spectrogram(command3, round(length(command3)/WINDOW_NUM), 0, [], Fs3, 'yaxis');
-[S, F, T, P, Fc, Tc] = spectrogram(command3, round(length(command4)/WINDOW_NUM), 0, [], Fs4, 'yaxis');
+commands = {command1 command2 command3 command4};
 
-ft = (0:Fs4/512:Fs4)';
-figure(1)
-plot(ft, abs(S(:,10)));
+for cell=commands
+    command=cell{1};
+    [S, F, T, P, Fc, Tc] = spectrogram(command, floor(length(command)/WINDOW_NUM), 0, [], Fs4, 'yaxis');
 
-figure(2)
-spectrogram(command4, round(length(command4)/WINDOW_NUM), 0, [], Fs4, 'yaxis');
+    ft = linspace(0,Fs4, length(F))';
 
-sr = zeros(WINDOW_NUM,1);
-for i=1:WINDOW_NUM
-    sr(i) = srodekciezkosci(ft, abs(S(:,i))); 
+    center_of_gravity = zeros(WINDOW_NUM,1);
+    for i=1:WINDOW_NUM
+        center_of_gravity(i) = eval_COG(ft, abs(S(:,i))); 
+    end
+    
+    means = zeros(WINDOW_NUM, 1);
+    for i=1:WINDOW_NUM
+       means(i) = mean(abs(S(:,i)));
+    end
+    
+    figure(1)
+    title("Środki ciężkości komendy");
+    hold on
+    grid on
+    grid minor
+    plot(linspace(1,WINDOW_NUM, WINDOW_NUM), center_of_gravity);
+    hold off
+    
+    figure(2)
+    title("Średnia częstotliwość w danym oknie");
+    hold on
+    grid on
+    grid minor
+    plot(linspace(1,WINDOW_NUM, WINDOW_NUM), means);
+       
 end
-plot(linspace(1,WINDOW_NUM, WINDOW_NUM), sr);
-
 

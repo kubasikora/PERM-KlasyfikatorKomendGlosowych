@@ -1,6 +1,7 @@
 COMMAND_COUNT = 3;
-TEST_NUM = 1;
+TEST_NUM = 4;
 WINDOW_NUM = 32;
+THRESHOLD = 3.0;
 
 %% ladowanie komendy do porownania
 [command, Fs] = obcinator(strcat('../Test/test', num2str(TEST_NUM), '.wav'));
@@ -55,12 +56,27 @@ eval = zeros(3,1);
 [min_val_mean, eval(2)] = min(err_mean);
 [min_val_dev, eval(3)] = min(err_dev);
 
+if min_val_cog > THRESHOLD 
+    eval(1) = 0;
+end
+
+if min_val_mean > THRESHOLD 
+    eval(1) = 0;
+end
+if min_val_dev > THRESHOLD 
+    eval(1) = 0;
+end
+
 % zliczanie wystapien i wyluskanie maksymalnej liczby powtorzen
 [a,b]=hist(eval,unique(eval));
 [max_eval, ind_eval] = max(a);
 if (max_eval >= 2)
-    outcome = b(ind_eval);
-    disp(strcat('Rozpoznano komende: ', num2str(outcome)));
+    if outcome == 0
+        disp('Nieznana komenda!')
+    else
+        outcome = b(ind_eval);
+        disp(strcat('Rozpoznano komende: ', num2str(outcome)));
+    end
 else
     disp('Nie udalo sie rozpoznac komendy!');
 end

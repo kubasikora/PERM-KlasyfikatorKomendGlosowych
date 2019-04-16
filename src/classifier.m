@@ -1,5 +1,6 @@
+close all
 COMMAND_COUNT = 3;
-TEST_NUM = 4;
+TEST_NUM = 16;
 WINDOW_NUM = 32;
 THRESHOLD = 3.0;
 
@@ -71,10 +72,10 @@ end
 [a,b]=hist(eval,unique(eval));
 [max_eval, ind_eval] = max(a);
 if (max_eval >= 2)
+    outcome = b(ind_eval);
     if outcome == 0
         disp('Nieznana komenda!')
     else
-        outcome = b(ind_eval);
         disp(strcat('Rozpoznano komende: ', num2str(outcome)));
     end
 else
